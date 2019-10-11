@@ -8,6 +8,9 @@ public class Player : MonoBehaviour
 {
     public List<Tool> tools;
     public TextMeshProUGUI useText;
+    public TextMeshProUGUI UserHudMessage;
+    private float hudTimer = 3f;
+
     private string readyToUse = "Use(E)";
     private string notReadyToUse = "You need a tool";
     private bool inPostion = false;
@@ -15,12 +18,33 @@ public class Player : MonoBehaviour
     private SmashBox sBox;
     [SerializeField] Transform ToolPosition;
     private float timer;
+    private Vector3 startingLocation;
+    private void Awake()
+    {
+        startingLocation = transform.position;
+    }
+
+    internal void Hurt(string impactMessage, Tool tool)
+    {
+        if (!tools.Contains(tool))
+        {
+            transform.position = startingLocation;
+            UserHudMessage.text = impactMessage;
+            UserHudMessage.enabled = true;
+        }
+        else
+        {
+
+        }
+
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         useText.enabled = false;
-        
+        UserHudMessage.enabled = false;
+
     }
 
     // Update is called once per frame
@@ -34,6 +58,15 @@ public class Player : MonoBehaviour
         if (useTool && timer == 0f)
         {
             UseFix();
+        }
+        if (UserHudMessage.enabled)
+        {
+            hudTimer -= Time.deltaTime;
+            if (hudTimer <= 0f)
+            {
+                UserHudMessage.enabled = false;
+                hudTimer = 3f;
+            }
         }
     }
     private void ToolTimer()

@@ -8,10 +8,11 @@ public class SmashBox : MonoBehaviour
     public Sprite Smashed;
     public SpriteRenderer ren;
     public bool active = true;
+    private Collider2D collider;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        collider = GetComponent<Collider2D>();
     }
 
     // Update is called once per frame
@@ -40,6 +41,7 @@ public class SmashBox : MonoBehaviour
         {
             active = false;
             ren.sprite = Smashed;
+            collider.enabled = false;
         }
     }
 }
