@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private float jumpForce = 400f;
     [Range(0, .3f)] [SerializeField] private float MovementSmoothing = .05f;
-    [SerializeField] private LayerMask ground;
+    [SerializeField] private LayerMask[] grounds;
     public float Speed = 40f;
     public bool grounded;
     private float LR;
@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     public float groundCheckRadius =.2f;
     private Rigidbody2D rb;
     private Vector3 Velocity = Vector3.zero;
+    [SerializeField] private Player player;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +32,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {
+        if (player.UsingTool)
+        {
+            return;
+        }
         Vector3 newVelocity = new Vector2((LR * Time.fixedDeltaTime) * 10f, rb.velocity.y);
 
         rb.velocity = Vector3.SmoothDamp(rb.velocity, newVelocity, ref Velocity, MovementSmoothing);
@@ -53,13 +58,17 @@ public class PlayerMovement : MonoBehaviour
 
     private void GroundCheck()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, groundCheckRadius, ground);
-        for (int i = 0; i < colliders.Length; i++)
+        foreach (LayerMask layerMask in grounds)
         {
-            if (colliders[i].gameObject != gameObject)
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, groundCheckRadius, layerMask);
+            for (int i = 0; i < colliders.Length; i++)
             {
-                grounded = true;
+                if (colliders[i].gameObject != gameObject)
+                {
+                    grounded = true;
+                }
             }
         }
+        
     }
 }

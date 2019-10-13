@@ -9,6 +9,7 @@ public class SmashBox : MonoBehaviour
     public SpriteRenderer ren;
     public bool active = true;
     private Collider2D collider;
+    [SerializeField] private Tool toolNeeded;
     // Start is called before the first frame update
     void Awake()
     {
@@ -24,7 +25,10 @@ public class SmashBox : MonoBehaviour
     {
         if (collision.collider.CompareTag("Player"))
         {
-            collision.gameObject.GetComponent<Player>().smash(true, this);
+            Player player = collision.gameObject.GetComponent<Player>();
+            if (player.tools.Contains(toolNeeded)){
+                player.smash(true, this);
+            }
         }
     }
     private void OnCollisionExit2D(Collision2D collision)

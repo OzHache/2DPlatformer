@@ -18,10 +18,14 @@ public class Player : MonoBehaviour
     private SmashBox sBox;
     [SerializeField] Transform ToolPosition;
     private float timer;
-    private Vector3 startingLocation;
+    public Vector3 startingLocation;
+    private MachineButton machineButton;
+    public bool UsingTool = false;
+
     private void Awake()
     {
         startingLocation = transform.position;
+        UsingTool = false;
     }
 
     internal void Hurt(string impactMessage, Tool tool)
@@ -31,11 +35,7 @@ public class Player : MonoBehaviour
             transform.position = startingLocation;
             UserHudMessage.text = impactMessage;
             UserHudMessage.enabled = true;
-        }
-        else
-        {
-
-        }
+        } 
 
     }
 
@@ -57,7 +57,14 @@ public class Player : MonoBehaviour
         useTool = Input.GetKeyDown(KeyCode.E);
         if (useTool && timer == 0f)
         {
-            UseFix();
+            if (sBox != null)
+            {
+                UseFix();
+            }
+            else if(machineButton != null)
+            {
+                ToggleMachine();
+            }
         }
         if (UserHudMessage.enabled)
         {
@@ -69,11 +76,19 @@ public class Player : MonoBehaviour
             }
         }
     }
+
+    private void ToggleMachine()
+    {
+        machineButton.Toggle();
+    }
+
     private void ToolTimer()
     {
+        
         if (timer > 0)
         {
             timer -= Time.deltaTime;
+            UsingTool = true;
         }
         else if (timer < 0)
         {
@@ -82,6 +97,7 @@ public class Player : MonoBehaviour
             tools.RemoveAt(0);
             Destroy(currentTool, 0f);
             sBox.Trigger();
+            UsingTool = false;
         }
     }
 
@@ -96,6 +112,19 @@ public class Player : MonoBehaviour
     {
         tools.Add(tool);
     }
+    public void SetMachine(bool onOff, MachineButton mb)
+    {
+        if (onOff)
+        {
+            useText.text = readyToUse;
+        }
+        
+            machineButton = mb;
+        
+            useText.enabled = onOff;
+
+    }
+ 
 
     internal void smash(bool touching, SmashBox smashBox)
     {
